@@ -20,7 +20,8 @@ int main(void) {
 		conn = env->createConnection(user, pass, srv);
 
 		int selection = 0;
-		Employee* emp = nullptr;
+		Employee *emp = new Employee;
+
 		do
 		{
 			selection = menu();

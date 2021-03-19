@@ -26,7 +26,7 @@ int menu(void)
 		}
 		else
 		{
-			std::cout << "Invalid selection, please re-enter: ";
+			std::cout << "Invalid selection, please re-enter" << std::endl;
 		}
 
 	} while (valid != true);
@@ -42,27 +42,32 @@ int findEmployee(Connection* conn, int employeeNumber, struct Employee* emp)
 	std::string query = "SELECT employeenumber, lastname, firstname, extension, email, officecode, reportsto, jobtitle FROM employees WHERE employeenumber =";
 	query.append(empNum);
 	Statement* stmt = conn->createStatement(query);
-	ResultSet* result = stmt->executeQuery();
+	ResultSet* rs = stmt->executeQuery();
 
-	emp->employeeNumber = result->getInt(1);
-	emp->lastName = result->getString(2);
-	//strcpy(emp->lastName, result->getString(2));
-	emp->firstName = result->getString(3);
-	emp->extension = result->getString(4);
-	emp->email = result->getString(5);
-	emp->officeCode = result->getString(6);
-	emp->reportsTo = result->getInt(7);
-	emp->jobTitle = result->getString(8);
+	if (rs->next())
+	{
+		found = true;
 
-	std::cout << "-------------- Employee Information -------------" << std::endl;
-	std::cout << "Employee Number: " << emp->employeeNumber << std::endl;
-	std::cout << "Last Name: " << emp->lastName << std::endl;
-	std::cout << "First Name: " << emp->firstName << std::endl;
-	std::cout << "Extension: " << emp->extension << std::endl;
-	std::cout << "Email: " << emp->email << std::endl;
-	std::cout << "Office Code: " << emp->officeCode << std::endl;
-	std::cout << "Manager ID: " << emp->reportsTo << std::endl;
-	std::cout << "Job Title: " << emp->jobTitle << std::endl;
+		emp->employeeNumber = rs->getInt(1);
+		emp->lastName = rs->getString(2);
+		//strcpy(emp->lastName, result->getString(2));
+		emp->firstName = rs->getString(3);
+		emp->extension = rs->getString(4);
+		emp->email = rs->getString(5);
+		emp->officeCode = rs->getString(6);
+		emp->reportsTo = rs->getInt(7);
+		emp->jobTitle = rs->getString(8);
+
+		std::cout << "-------------- Employee Information -------------" << std::endl;
+		std::cout << "Employee Number: " << emp->employeeNumber << std::endl;
+		std::cout << "Last Name: " << emp->lastName << std::endl;
+		std::cout << "First Name: " << emp->firstName << std::endl;
+		std::cout << "Extension: " << emp->extension << std::endl;
+		std::cout << "Email: " << emp->email << std::endl;
+		std::cout << "Office Code: " << emp->officeCode << std::endl;
+		std::cout << "Manager ID: " << emp->reportsTo << std::endl;
+		std::cout << "Job Title: " << emp->jobTitle << std::endl;
+	}
 
 	conn->terminateStatement(stmt);
 
