@@ -91,7 +91,7 @@ namespace sdds{
 				cout << "Result Set is empty." << endl;
 			} else {
 				do {
-					std::cout << "\n------   ---------------   ---------------------------------  ----------------  ---------  -----------------" << std::endl;
+					
 					std::cout.setf(ios::left);
 					std::cout.width(9);
 					std::cout << "ID";
@@ -118,9 +118,43 @@ namespace sdds{
 	}
 
 	void insertEmployee(struct Employee* emp){
-
+	
+		try{
+			stmt->setInt(1, emp.employeeNumber);
+			stmt->setString(2, emp.lastName);
+			stmt->setString(3, emp.firstName);
+			stmt->setString(4, emp.extension);
+			stmt->setString(5, emp.email);
+			stmt->setString(6, emp.officeCode);
+			stmt->setInt(7, emp.reportsTo);
+			stmt->setString(8, emp.jobTitle);
+			
+		} catch(SQLException& sqlExcp){
+			std::cout << sqlExcp.getErrorCode() << ": " << sqlExcp.getMessage();
+		}
+		
 	}
 	void insertEmployee(Connection* conn, struct Employee emp){
+		bool found = true;
+		Statement* stmt = conn->createStatement(query);
+		ResultSet* rs = stmt->executeQuery();
+		findEmployee(conn, emp.employeeNumber, &emp) == 1) ? std::cout << "\nAn employee with the same employee number exists." << std::endl : found == false;
+
+		if(found == true){
+			try{
+				Statement* stmt = conn->createStatement();
+				stmt->setSQL("INSERT INTO employees VALUES(:1,:2,:3,:4,:5,:6,:7,:8)");
+				insertEmployee(emp);
+				stmt->executeUpdate();
+				conn->commit();
+				std::cout << "\nThe new employee is added successfully. " << std::endl;
+				
+				conn->terminateStatement(stmt);
+				
+			} catch(SQLException& sqlExcp) {
+				std::cout << sqlExcp.getErrorCode() << ": " << sqlExcp.getMessage();
+			}
+		}
 
 	}
 
@@ -129,5 +163,11 @@ namespace sdds{
 	}
 	void deleteEmployee(Connection* conn, int employeeNumber){
 
+	}
+
+	void displayHeader(){
+		std::cout << "------   ---------------   ---------------------------------  ----------------  ---------  -----------------" << std::endl;
+
+		std::cout << "------   ---------------   ---------------------------------  ----------------  ---------  -----------------" << std::endl;
 	}
 }
