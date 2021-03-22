@@ -5,33 +5,38 @@
 using oracle::occi::Environment;
 using oracle::occi::Connection;
 using namespace oracle::occi;
+using namespace std;
 
-struct Employee
-{
-	int employeeNumber;
-	std::string lastName;
-	//char lastName[50];
-	std::string firstName;
-	//char firstName[50];
-	std::string extension;
-	//char extension[10];
-	std::string email;
-	//char email[100];
-	std::string officeCode;
-	//char officecode[10];
-	int reportsTo;
-	std::string jobTitle;
-	//char jobTitle[50];
-};
+#ifndef SDDS_MODULE1_H
+#define SDDS_MODULE1_H
+namespace sdds{
+	struct Employee{
+		int employeeNumber;
+		std::string lastName;
+		//char lastName[50];
+		std::string firstName;
+		//char firstName[50];
+		std::string extension;
+		//char extension[10];
+		std::string email;
+		//char email[100];
+		std::string officeCode;
+		//char officecode[10];
+		int reportsTo;
+		std::string jobTitle;
+		//char jobTitle[50];
+	};
 
-int menu(void);
-int findEmployee(Connection* conn, int employeeNumber, struct Employee* emp);
+	int menu(void);
+	int findEmployee(Connection* conn, int employeeNumber, struct Employee* emp);
 
-void displayEmployee(Connection* conn, struct Employee emp);
-void displayAllEmployee(Connection* conn);
+	void displayEmployee(const struct Employee emp);
+	void displayAllEmployee(Connection* conn);
 
-void insertEmployee(struct Employee* emp);
-void insertEmployee(Connection* conn, struct Employee emp);
+	void insertEmployee(struct Employee* emp);
+	void insertEmployee(Connection* conn, struct Employee emp);
 
-void updateEmployee(Connection* conn, int employeeNumber);
-void deleteEmployee(Connection* conn, int employeeNumber);
+	void updateEmployee(Connection* conn, int employeeNumber, struct Employee emp);
+	void deleteEmployee(Connection* conn, int employeeNumber, struct Employee emp);
+}
+#endif // !SDDS_MODULE1_H

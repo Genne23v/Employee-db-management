@@ -6,6 +6,7 @@ using oracle::occi::Environment;
 using oracle::occi::Connection;
 using namespace oracle::occi;
 using namespace std;
+using namespace sdds;
 
 int main(void) {
 	Environment* env = nullptr;
