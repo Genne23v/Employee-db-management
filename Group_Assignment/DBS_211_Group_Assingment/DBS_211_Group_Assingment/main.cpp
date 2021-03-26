@@ -22,6 +22,7 @@ int main(void) {
 
 		int selection = 0;
 		Employee *emp = new Employee;
+		Employee ptrCvt;
 
 		do
 		{
@@ -42,18 +43,21 @@ int main(void) {
 				}
 				break;
 			case 2:
-				displayAllEmployee(Connection * conn);
-				displayEmployee(Connection * conn, struct Employee emp);
+				displayAllEmployee(conn);
 				break;
 			case 3:
-				insertEmployee(struct Employee* emp);
-				insertEmployee(Connection * conn, struct Employee emp);
+				insertEmployee(emp);
+				ptrCvt = *emp;
+				insertEmployee(conn, ptrCvt);
 				break;
 			case 4:
-				updateEmployee(Connection * conn, int employeeNumber);
+				cout << "Enter Employee Number: ";
+				cin >> empNum;
+				findEmployee(conn, empNum, emp);
+				updateEmployee(conn, empNum);
 				break;
 			case 5:
-				deleteEmployee(Connection * conn, int employeeNumber);
+				deleteEmployee(conn, empNum);
 				break;
 			default:
 				std::cout << "Invalid selection. Please re-enter" << std::endl;

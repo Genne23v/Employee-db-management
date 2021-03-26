@@ -10,7 +10,8 @@ using namespace std;
 #ifndef SDDS_MODULE1_H
 #define SDDS_MODULE1_H
 namespace sdds{
-	struct Employee{
+	struct Employee
+	{
 		int employeeNumber;
 		std::string lastName;
 		//char lastName[50];
@@ -30,13 +31,13 @@ namespace sdds{
 	int menu(void);
 	int findEmployee(Connection* conn, int employeeNumber, struct Employee* emp);
 
-	void displayEmployee(const struct Employee emp);
+	void displayEmployee(Connection *conn, struct Employee emp);
 	void displayAllEmployee(Connection* conn);
 
 	void insertEmployee(struct Employee* emp);
 	void insertEmployee(Connection* conn, struct Employee emp);
 
-	void updateEmployee(Connection* conn, int employeeNumber, struct Employee emp);
-	void deleteEmployee(Connection* conn, int employeeNumber, struct Employee emp);
+	void updateEmployee(Connection* conn, int employeeNumber);
+	void deleteEmployee(Connection* conn, int employeeNumber);
 }
 #endif // !SDDS_MODULE1_H
