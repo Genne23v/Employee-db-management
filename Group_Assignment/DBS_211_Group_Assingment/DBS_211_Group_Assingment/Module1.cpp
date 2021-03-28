@@ -182,6 +182,26 @@ namespace sdds{
 	}
 	void deleteEmployee(Connection* conn, int employeeNumber)
 	{
+		struct Employee emp;
+		if(findEmployee(conn, employeeNumber, &emp) == 1)
+		{
+			Statement* stmt = conn->createStatement();
+			try{
+				
+				stmt->setSQL("DELETE FROM employees WHERE employeenumber=:1");
+				stmt->setInt(1, employeeNumber);
+				stmt->executeUpdate();
+				conn->commit();
+			} catch(SQLException& sqlExcp) {
+				std::cout << sqlExcp.getErrorCode() << ": " << sqlExcp.getMessage();
+			}
+				conn->terminateStatement(stmt);
+
+			cout << "The employee with ID " << employeeNumber << " is deleted successfully." << endl;
+		} else
+		{
+			cout << "The employee with ID " << employeeNumber << " does not exist." << endl;
+		}
 
 	}
 
