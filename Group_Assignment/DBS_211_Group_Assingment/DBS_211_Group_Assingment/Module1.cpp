@@ -1,6 +1,8 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <string>
 #include <cstring>
+#include <iomanip>
 #include "Module1.h"
 
 using namespace std;
@@ -38,10 +40,10 @@ namespace sdds{
 
 	int findEmployee(Connection* conn, int employeeNumber, struct Employee* emp){
 		bool found = false;
-		Employee ptrCvt;
+		//Employee ptrCvt;
 		std::string empNum = std::to_string(employeeNumber);
 
-		std::string query = "SELECT employeenumber, lastname, firstname, extension, email, officecode, reportsto, jobtitle FROM employees WHERE employeenumber =";
+		std::string query = "SELECT employeenumber, lastname, firstname, extension, email, officecode, reportsto, jobtitle FROM employees2 WHERE employeenumber =";
 		query.append(empNum);
 		Statement* stmt = conn->createStatement(query);
 		ResultSet* rs = stmt->executeQuery();
@@ -51,16 +53,16 @@ namespace sdds{
 			found = true;
 
 			emp->employeeNumber = rs->getInt(1);
-			emp->lastName = rs->getString(2);
-			emp->firstName = rs->getString(3);
-			emp->extension = rs->getString(4);
-			emp->email = rs->getString(5);
-			emp->officeCode = rs->getString(6);
+			strcpy(emp->lastName, rs->getString(2).c_str());
+			strcpy(emp->firstName, rs->getString(3).c_str());
+			strcpy(emp->extension, rs->getString(4).c_str());
+			strcpy(emp->email, rs->getString(5).c_str());
+			strcpy(emp->officecode, rs->getString(6).c_str());
 			emp->reportsTo = rs->getInt(7);
-			emp->jobTitle = rs->getString(8);
+			strcpy(emp->jobTitle, rs->getString(8).c_str());
 			
-			ptrCvt = *emp;
-			displayEmployee(conn, ptrCvt);
+			//ptrCvt = *emp;
+			//displayEmployee(conn, ptrCvt);
 		}
 
 		conn->terminateStatement(stmt);
@@ -75,14 +77,19 @@ namespace sdds{
 		std::cout << "First Name: " << emp.firstName << std::endl;
 		std::cout << "Extension: " << emp.extension << std::endl;
 		std::cout << "Email: " << emp.email << std::endl;
-		std::cout << "Office Code: " << emp.officeCode << std::endl;
+		std::cout << "Office Code: " << emp.officecode << std::endl;
 		std::cout << "Manager ID: " << emp.reportsTo << std::endl;
 		std::cout << "Job Title: " << emp.jobTitle << std::endl;
+		std::cout << endl;
+	}
+	void displayHeader() {
+		std::cout << "------   ---------------   ---------------------------------  ----------------  ---------  -----------------" << std::endl;
+		std::cout << "ID       Employee Name     Email                              Phone             Extension  Manager Name     " << std::endl;
+		std::cout << "------   ---------------   ---------------------------------  ----------------  ---------  -----------------" << std::endl;
 	}
 	void displayAllEmployee(Connection* conn){
 		try {
-			string eeQuery = "SELECT * FROM employee;"; //TODO: Define inquiry
-			int num = 0;
+			string eeQuery = "SELECT emp.employeenumber, emp.firstname || ' ' || emp.lastname, emp.email, phone, emp.extension, mgr.firstname || ' ' || mgr.lastname FROM employees2 emp LEFT JOIN employees2 mgr ON emp.reportsto = mgr.employeenumber JOIN offices ofc ON ofc.officecode = emp.officecode ORDER BY 1"; //TODO: Define inquiry
 			Statement* stmt = conn->createStatement(eeQuery);
 			ResultSet* rs = stmt->executeQuery();
 
@@ -92,22 +99,13 @@ namespace sdds{
 
 				cout << "Result Set is empty." << endl;
 			} else {
+				displayHeader();
 				do {
 					
-					std::cout.setf(ios::left);
-					std::cout.width(9);
-					std::cout << "ID";
-					std::cout.width(18);
-					std::cout << "Employee Name";
-					std::cout.width(35);
-					std::cout << "Email";
-					std::cout.width(18);
-					std::cout << "Phone";
-					std::cout.width(11);
-					std::cout << "Extension";
-					std::cout << "Manager Name" << std::endl;
-				} while(rs->next());
+					cout << left << setw(9) << rs->getInt(1) << setw(18) << rs->getString(2) << setw(35) << rs->getString(3) << setw(18) << rs->getString(4) << setw(11) << rs->getString(5) << setw(20) << rs->getString(6) << endl;
 
+				} while(rs->next());
+				cout << endl;
 			}
 
 			conn->terminateStatement(stmt);
@@ -118,77 +116,16 @@ namespace sdds{
 
 
 	}
-
-	void insertEmployee(struct Employee* emp)
-	{
-		//TODO: INPUT VALIDATION
-		cout << "Employee Number: ";
-		cin >> emp->employeeNumber;
-		cout << "Last Name: ";
-		cin >> emp->lastName;
-		cout << "First Name: ";
-		cin >> emp->firstName;
-		cout << "Extension: ";
-		cin >> emp->extension;
-		cout << "Email: ";
-		cin >> emp->email;
-		cout << "Office Code: ";
-		cin >> emp->officeCode;
-		cout << "Manager ID: ";
-		cin >> emp->reportsTo;
-		cout << "Job Title: ";
-		cin >> emp->jobTitle;
-
-		cout << "The new employee is added successfully." << endl;
-	}
-
-	void insertEmployee(Connection* conn, struct Employee emp)
-	{
-		bool found = true;
-		
-		if (findEmployee(conn, emp.employeeNumber, &emp))
-		{
-			std::cout << "\nAn employee with the same employee number exists." << std::endl;
-		}
-		else
-		{
-			found = false;
-		}
-
-		if(found == false){
-			try{
-				Statement* stmt = conn->createStatement();
-				stmt->setSQL("INSERT INTO employees VALUES(:1,:2,:3,:4,:5,:6,:7,:8)");
-				stmt->setInt(1, emp.employeeNumber);
-				stmt->setString(2, emp.lastName);
-				stmt->setString(3, emp.firstName);
-				stmt->setString(4, emp.extension);
-				stmt->setString(5, emp.email);
-				stmt->setString(6, emp.officeCode);
-				stmt->setInt(7, emp.reportsTo);
-				stmt->setString(8, emp.jobTitle);
-
-				stmt->executeUpdate();
-				conn->commit();
-				std::cout << "\nThe new employee is added successfully. " << std::endl;
-				
-				conn->terminateStatement(stmt);
-				
-			} catch(SQLException& sqlExcp) {
-				std::cout << sqlExcp.getErrorCode() << ": " << sqlExcp.getMessage();
-			}
-		}
-
-	}
+	
 	void deleteEmployee(Connection* conn, int employeeNumber)
 	{
 		struct Employee emp;
-		if(findEmployee(conn, emp.employeeNumber, &emp) == 1)
+		if(findEmployee(conn, employeeNumber, &emp) == 1)
 		{
 			Statement* stmt = conn->createStatement();
 			try{
 				
-				stmt->setSQL("DELETE FROM employees WHERE employeenumber=:1");
+				stmt->setSQL("DELETE FROM employees2 WHERE employeenumber=:1");
 				stmt->setInt(1, emp.employeeNumber);
 				stmt->executeUpdate();
 				conn->commit();
@@ -197,17 +134,11 @@ namespace sdds{
 			}
 				conn->terminateStatement(stmt);
 
-			cout << "The employee with ID " << employeeNumber << " is deleted successfully." << endl;
+			cout << "The employee with ID " << employeeNumber << " is deleted successfully." << endl << endl;
 		} else
 		{
-			cout << "The employee with ID " << employeeNumber << " does not exist." << endl;
+			cout << "The employee with ID " << employeeNumber << " does not exist." << endl << endl;
 		}
 
-	}
-
-	void displayHeader(){
-		std::cout << "------   ---------------   ---------------------------------  ----------------  ---------  -----------------" << std::endl;
-
-		std::cout << "------   ---------------   ---------------------------------  ----------------  ---------  -----------------" << std::endl;
 	}
 }

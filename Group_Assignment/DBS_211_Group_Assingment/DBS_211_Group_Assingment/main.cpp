@@ -37,9 +37,13 @@ int main(void) {
 			case 1:
 				cout << "Enter Employee Number: ";
 				cin >> empNum;
-				if (!findEmployee(conn, empNum, emp))
+				if (findEmployee(conn, empNum, emp))
 				{
-					cout << "Employee " << empNum << " does not exist." << endl;
+					displayEmployee(conn, *emp);
+				}
+				else 
+				{
+					cout << "Employee " << empNum << " does not exist." << endl << endl;
 				}
 				break;
 			case 2:
@@ -53,10 +57,18 @@ int main(void) {
 			case 4:
 				cout << "Enter Employee Number: ";
 				cin >> empNum;
-				findEmployee(conn, empNum, emp);
-				updateEmployee(conn, empNum);
+				if (findEmployee(conn, empNum, emp))
+				{
+					updateEmployee(conn, empNum);
+				}
+				else
+				{
+					cout << "The employee with ID " << empNum << " does not exist." << endl << endl;
+				}
 				break;
 			case 5:
+				cout << "Enter Employee Number: ";
+				cin >> empNum;
 				deleteEmployee(conn, empNum);
 				break;
 			default:
