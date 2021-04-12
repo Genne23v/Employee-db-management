@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -9,7 +10,6 @@ namespace sdds
 {
 	void insertEmployee(struct Employee* emp)
 	{
-		//TODO: INPUT VALIDATION
 		cout << "Employee Number: ";
 		cin >> emp->employeeNumber;
 		cout << "Last Name: ";
@@ -20,14 +20,12 @@ namespace sdds
 		cin >> emp->extension;
 		cout << "Email: ";
 		cin >> emp->email;
-		cout << "Office Code: ";
-		cin >> emp->officecode;
-		cout << "Manager ID: ";
-		cin >> emp->reportsTo;
+		cout << "Office Code: 1" << endl;
+		strcpy(emp->officecode, "1");
+		cout << "Manager ID: 1002" << endl;
+		emp->reportsTo = 1002;
 		cout << "Job Title: ";
 		cin >> emp->jobTitle;
-
-		//cout << "The new employee is added successfully." << endl;
 	}
 
 	void insertEmployee(Connection* conn, struct Employee emp)
@@ -75,9 +73,7 @@ namespace sdds
 		try {
 			std::string empNum = std::to_string(employeeNumber);
 			std::string ext; 
-
-			cout << "Last Name: " << endl;
-			cout << "First Name: " << endl;
+			
 			cout << "Extension: ";
 			cin >> ext;
 
@@ -87,7 +83,7 @@ namespace sdds
 			query.append(queryEnding);
 			query.append(empNum);
 			
-			Statement* stmt = conn->createStatement(query);
+			Statement *stmt = conn->createStatement(query);
 			stmt->executeUpdate();
 			conn->commit();
 
@@ -98,5 +94,32 @@ namespace sdds
 		catch (SQLException& sqlExcp) {
 			std::cout << sqlExcp.getErrorCode() << ": " << sqlExcp.getMessage();
 		}
+	}
+
+	void deleteEmployee(Connection* conn, int employeeNumber)
+	{
+		struct Employee emp;
+		if (findEmployee(conn, employeeNumber, &emp) == 1)
+		{
+			Statement* stmt = conn->createStatement();
+			try {
+
+				stmt->setSQL("DELETE FROM employees2 WHERE employeenumber=:1");
+				stmt->setInt(1, emp.employeeNumber);
+				stmt->executeUpdate();
+				conn->commit();
+			}
+			catch (SQLException& sqlExcp) {
+				std::cout << sqlExcp.getErrorCode() << ": " << sqlExcp.getMessage();
+			}
+			conn->terminateStatement(stmt);
+
+			cout << "The employee with ID " << employeeNumber << " is deleted successfully." << endl << endl;
+		}
+		else
+		{
+			cout << "The employee with ID " << employeeNumber << " does not exist." << endl << endl;
+		}
+
 	}
 }

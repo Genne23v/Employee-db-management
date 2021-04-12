@@ -26,7 +26,7 @@ namespace sdds{
 			std::cin >> selection;
 
 			if(std::cin.fail() || ( selection < 1 && selection > 5 )){
-				std::cout << "Invalid selection, please re-enter" << std::endl;
+				std::cout << "Invalid selection!" << std::endl << endl;
 				valid = false;
 				//Clears input buffer
 				std::cin.ignore(10000, '\n');
@@ -40,7 +40,6 @@ namespace sdds{
 
 	int findEmployee(Connection* conn, int employeeNumber, struct Employee* emp){
 		bool found = false;
-		//Employee ptrCvt;
 		std::string empNum = std::to_string(employeeNumber);
 
 		std::string query = "SELECT employeenumber, lastname, firstname, extension, email, officecode, reportsto, jobtitle FROM employees2 WHERE employeenumber =";
@@ -60,17 +59,14 @@ namespace sdds{
 			strcpy(emp->officecode, rs->getString(6).c_str());
 			emp->reportsTo = rs->getInt(7);
 			strcpy(emp->jobTitle, rs->getString(8).c_str());
-			
-			//ptrCvt = *emp;
-			//displayEmployee(conn, ptrCvt);
 		}
 
 		conn->terminateStatement(stmt);
 
 		return found;
 	}
-	void displayEmployee(Connection *conn, struct Employee emp){
-		//WHAT IS THIS conn FOR?
+	void displayEmployee(struct Employee emp){
+		
 		std::cout << "\n-------------- Employee Information -------------" << std::endl;
 		std::cout << "Employee Number: " << emp.employeeNumber << std::endl;
 		std::cout << "Last Name: " << emp.lastName << std::endl;
@@ -89,12 +85,10 @@ namespace sdds{
 	}
 	void displayAllEmployee(Connection* conn){
 		try {
-			string eeQuery = "SELECT emp.employeenumber, emp.firstname || ' ' || emp.lastname, emp.email, phone, emp.extension, mgr.firstname || ' ' || mgr.lastname FROM employees2 emp LEFT JOIN employees2 mgr ON emp.reportsto = mgr.employeenumber JOIN offices ofc ON ofc.officecode = emp.officecode ORDER BY 1"; //TODO: Define inquiry
+			string eeQuery = "SELECT emp.employeenumber, emp.firstname || ' ' || emp.lastname, emp.email, phone, emp.extension, mgr.firstname || ' ' || mgr.lastname FROM employees2 emp LEFT JOIN employees2 mgr ON emp.reportsto = mgr.employeenumber JOIN offices ofc ON ofc.officecode = emp.officecode ORDER BY 1"; 
 			Statement* stmt = conn->createStatement(eeQuery);
 			ResultSet* rs = stmt->executeQuery();
 
-			// TODO: displayHeader(1, "Employee");
-			// TODO: displayTitle();
 			if(!rs->next()) {
 
 				cout << "Result Set is empty." << endl;
@@ -114,31 +108,6 @@ namespace sdds{
 			cout << sqlExcp.getErrorCode() << ": " << sqlExcp.getMessage();
 		}
 
-
-	}
-	
-	void deleteEmployee(Connection* conn, int employeeNumber)
-	{
-		struct Employee emp;
-		if(findEmployee(conn, employeeNumber, &emp) == 1)
-		{
-			Statement* stmt = conn->createStatement();
-			try{
-				
-				stmt->setSQL("DELETE FROM employees2 WHERE employeenumber=:1");
-				stmt->setInt(1, emp.employeeNumber);
-				stmt->executeUpdate();
-				conn->commit();
-			} catch(SQLException& sqlExcp) {
-				std::cout << sqlExcp.getErrorCode() << ": " << sqlExcp.getMessage();
-			}
-				conn->terminateStatement(stmt);
-
-			cout << "The employee with ID " << employeeNumber << " is deleted successfully." << endl << endl;
-		} else
-		{
-			cout << "The employee with ID " << employeeNumber << " does not exist." << endl << endl;
-		}
 
 	}
 }

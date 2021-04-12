@@ -39,7 +39,8 @@ int main(void) {
 				cin >> empNum;
 				if (findEmployee(conn, empNum, emp))
 				{
-					displayEmployee(conn, *emp);
+					
+					displayEmployee(*emp);
 				}
 				else 
 				{
@@ -59,6 +60,8 @@ int main(void) {
 				cin >> empNum;
 				if (findEmployee(conn, empNum, emp))
 				{
+					cout << "Last Name: " << emp->lastName << endl;
+					cout << "First Name: " << emp->firstName << endl;
 					updateEmployee(conn, empNum);
 				}
 				else
